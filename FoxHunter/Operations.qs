@@ -62,6 +62,42 @@
         }  
     }
 
+
+
+    // Select next Fox movement direction, updating qubit 5
+    // 1 means go up   (4 -> 3, 3 -> 2, ... 1 -> 0)
+    // 0 means go down (0 -> 1, 1 -> 2, ... 3 -> 4)
+    operation SetupMovementDirection(qubits: Qubit[]) : Unit
+    {
+        body
+        {   
+            // See schema
+            //  https://algassert.com/quirk#circuit={%22cols%22:[[%22~27va%22],[1,1,1,1,%22%E2%80%A2%22,%22X%22],[1,1,1,%22%E2%80%A2%22,1,%22H%22],[1,1,%22%E2%80%A2%22,1,1,%22H%22],[1,%22%E2%80%A2%22,1,1,1,%22H%22]],%22gates%22:[{%22id%22:%22~27va%22,%22name%22:%22Init%22,%22circuit%22:{%22cols%22:[[%22H%22,1,%22H%22],[%22%E2%80%A2%22,1,%22%E2%80%A2%22,%22X%22],[%22%E2%97%A6%22,%22X%22,%22%E2%97%A6%22],[%22X%22,1,%22X%22,%22%E2%80%A2%22],[1,1,1,%22%E2%80%A2%22,%22H%22],[1,1,1,%22X%22,%22%E2%80%A2%22]]}},{%22id%22:%22~7vbh%22,%22name%22:%22Set%20Current%20Move%22,%22circuit%22:{%22cols%22:[[1,1,1,1,%22%E2%80%A2%22,%22X%22],[1,1,1,%22%E2%80%A2%22,1,%22H%22],[1,1,%22%E2%80%A2%22,1,1,%22H%22],[1,%22%E2%80%A2%22,1,1,1,%22H%22]]}}]}
+            //
+
+            // Step 1
+            CNOT(qubits[4], qubits[5]);
+            
+            // Step 2
+            (Controlled (H))([qubits[3]], qubits[5]);               
+
+            // Step 3
+            (Controlled (H))([qubits[2]], qubits[5]);               
+
+            // Step 4
+            (Controlled (H))([qubits[1]], qubits[5]);               
+        }  
+    }
+
+
+
+
+
+
+
+
+
+
     operation TestInit(): (Result, Result, Result, Result, Result)
     {
         body
@@ -91,6 +127,38 @@
             }    
             
             return (res0, res1, res2, res3, res4);        
+        }         
+    }
+
+
+
+    operation TestMovementDirectionSetup(): (Result, Result, Result, Result, Result, Result)
+    {
+        body
+        {
+            mutable res0 = Zero;
+            mutable res1 = Zero;
+            mutable res2 = Zero;
+            mutable res3 = Zero;
+            mutable res4 = Zero;
+            mutable res5 = Zero;
+
+            using(qubits=Qubit[16])
+            {   
+                InitFoxHoles(qubits);     
+                SetupMovementDirection(qubits);
+                
+                set res0 = M(qubits[0]);
+                set res1 = M(qubits[1]);
+                set res2 = M(qubits[2]);
+                set res3 = M(qubits[3]);
+                set res4 = M(qubits[4]);
+                set res5 = M(qubits[5]);
+
+                ResetAll(qubits); // ALWAYS clean after yourself        
+            }    
+            
+            return (res0, res1, res2, res3, res4, res5);        
         }         
     }
 }

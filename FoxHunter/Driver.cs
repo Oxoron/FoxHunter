@@ -13,7 +13,8 @@ namespace Quantum.FoxHunter
         {
             // RunFoxHunt();
 
-            TestInitiation();
+            //TestInitiation();
+            TestMovementDirectionSetup();
 
             Console.ReadLine();
             
@@ -45,6 +46,38 @@ namespace Quantum.FoxHunter
             }
         }
 
+        static void TestMovementDirectionSetup()
+        {
+            using (var sim = new QuantumSimulator())
+            {
+                List<string> results = new List<string>();
+                string initedCubit = null;
+                string moveDirection = null;
+
+                for (int i = 0; i < 1000; i++)
+                {
+                    (Result, Result, Result, Result, Result, Result) result = Quantum.FoxHunter.TestMovementDirectionSetup.Run(sim).Result;
+                    if (result.Item1 == Result.One) { initedCubit = "0"; }
+                    if (result.Item2 == Result.One) { initedCubit = "1"; }
+                    if (result.Item3 == Result.One) { initedCubit = "2"; }
+                    if (result.Item4 == Result.One) { initedCubit = "3"; }
+                    if (result.Item5 == Result.One) { initedCubit = "4"; }
+
+                    if (result.Item6 == Result.One) { moveDirection = "1"; }
+                    else { moveDirection = "0"; }
+
+                    results.Add($"{initedCubit}{moveDirection}");
+                }
+
+                foreach(var group in results
+                    .GroupBy(result => result)
+                    .OrderBy(group => group.Key))
+                {
+                    Console.WriteLine($"{group.Key} was measured {group.Count()} times");
+                }
+                Console.WriteLine($"\r\nTotal measures: {results.Count()}");                                  
+            }
+        }
 
         static void RunFoxHunt()
         {
