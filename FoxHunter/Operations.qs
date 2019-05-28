@@ -8,21 +8,45 @@
     }
 
     operation TestStrategy () : (Result)
-    {
-        let res = Zero;
+    {         
+        // 0..4 - holes
+        // 5 - current movement direction. Zero means "go down", One means "go up"
+        // 6 - Game status. 1 means "fox is free, go further"
+        // 7,8,9,10, 11 - movements history
+        // 12 - another qubit of the fox live. 1 means "fox is still free, go further"
+        // 13 Result qubit. If it's zero, the fox is alive
 
-        using(qubits=Qubit[16])
-        {               
-            // 0..4 - holes
-            // 5 - current movement direction. Zero means "go down", One means "go up"
-            // 6 - Game status. 1 means "fox is free, go further"
-            // 7,8,9,10, 11 - movements history
+        // Circuit: https://algassert.com/quirk#circuit={%22cols%22:[[%22~27va%22,1,1,1,1,1,%22X%22],[%22~7vbh%22,1,1,1,1,1,%22%E2%80%A2%22],[%22~3miv%22,1,1,1,1,1,%22%E2%80%A2%22],[1,%22%E2%80%A2%22,1,1,1,1,%22X%22],[1,1,1,1,1,%22Swap%22,1,%22Swap%22],[%22~7vbh%22,1,1,1,1,1,%22%E2%80%A2%22],[%22~3miv%22,1,1,1,1,1,%22%E2%80%A2%22],[1,1,%22%E2%80%A2%22,1,1,1,%22X%22],[1,1,1,1,1,%22Swap%22,1,1,%22Swap%22],[%22~7vbh%22,1,1,1,1,1,%22%E2%80%A2%22],[%22~3miv%22,1,1,1,1,1,%22%E2%80%A2%22],[1,1,1,%22%E2%80%A2%22,1,1,%22X%22],[1,1,1,1,1,%22Swap%22,1,1,1,%22Swap%22],[1,1,1,1,1,1,1,1,1,1,1,1,%22X%22],[%22~7vbh%22,1,1,1,1,1,%22%E2%80%A2%22,1,1,1,1,1,%22%E2%80%A2%22],[%22~3miv%22,1,1,1,1,1,%22%E2%80%A2%22,1,1,1,1,1,%22%E2%80%A2%22],[1,%22%E2%80%A2%22,1,1,1,1,1,1,1,1,1,1,%22X%22],[1,1,1,1,1,%22Swap%22,1,1,1,1,%22Swap%22],[%22~7vbh%22,1,1,1,1,1,%22%E2%80%A2%22,1,1,1,1,1,%22%E2%80%A2%22],[%22~3miv%22,1,1,1,1,1,%22%E2%80%A2%22,1,1,1,1,1,%22%E2%80%A2%22],[1,1,%22%E2%80%A2%22,1,1,1,1,1,1,1,1,1,%22X%22],[1,1,1,1,1,%22Swap%22,1,1,1,1,1,%22Swap%22],[%22~7vbh%22,1,1,1,1,1,%22%E2%80%A2%22,1,1,1,1,1,%22%E2%80%A2%22],[%22~3miv%22,1,1,1,1,1,%22%E2%80%A2%22,1,1,1,1,1,%22%E2%80%A2%22],[1,1,1,%22%E2%80%A2%22,1,1,1,1,1,1,1,1,%22X%22],[1,1,1,1,1,1,%22%E2%97%A6%22,1,1,1,1,1,1,%22X%22],[1,1,1,1,1,1,1,1,1,1,1,1,%22%E2%97%A6%22,%22X%22],[1,1,1,1,1,1,%22%E2%97%A6%22,1,1,1,1,1,%22%E2%97%A6%22,%22X%22]],%22gates%22:[{%22id%22:%22~27va%22,%22name%22:%22Init%22,%22circuit%22:{%22cols%22:[[%22H%22,1,%22H%22],[%22%E2%80%A2%22,1,%22%E2%80%A2%22,%22X%22],[%22%E2%97%A6%22,%22X%22,%22%E2%97%A6%22],[%22X%22,1,%22X%22,%22%E2%80%A2%22],[1,1,1,%22%E2%80%A2%22,%22H%22],[1,1,1,%22X%22,%22%E2%80%A2%22]]}},{%22id%22:%22~7vbh%22,%22name%22:%22Set%20Current%20Move%22,%22circuit%22:{%22cols%22:[[1,1,1,1,%22%E2%80%A2%22,%22X%22],[1,1,1,%22%E2%80%A2%22,1,%22H%22],[1,1,%22%E2%80%A2%22,1,1,%22H%22],[1,%22%E2%80%A2%22,1,1,1,%22H%22]]}},{%22id%22:%22~3miv%22,%22name%22:%22Move%22,%22circuit%22:{%22cols%22:[[%22Swap%22,%22Swap%22,1,1,1,%22%E2%80%A2%22],[1,%22Swap%22,%22Swap%22,1,1,%22%E2%80%A2%22],[1,1,%22Swap%22,%22Swap%22,1,%22%E2%80%A2%22],[1,1,1,%22Swap%22,%22Swap%22,%22%E2%80%A2%22],[1,1,1,%22Swap%22,%22Swap%22,%22%E2%97%A6%22],[1,1,%22Swap%22,%22Swap%22,1,%22%E2%97%A6%22],[1,%22Swap%22,%22Swap%22,1,1,%22%E2%97%A6%22],[%22Swap%22,%22Swap%22,1,1,1,%22%E2%97%A6%22]]}}]}
+        body
+        {   
+            mutable res = Zero;            
 
-            InitFoxHoles(qubits);           
+            using(qubits=Qubit[14])
+            {   
+                ResetAll(qubits);
 
-            ResetAll(qubits); // ALWAYS clean after yourself        
-        }                               
-        return Zero;
+                // Init fox positions and the fox' live
+                InitFoxHoles(qubits);     
+                X(qubits[6]); // At the beginning of the game our fox is alive
+                X(qubits[12]); // The second qubit of the fox live. If it's one - the fox is alive.
+
+                // Make moves
+                MakeSixMovements(qubits);
+
+                // Measure results. If the 13'th qubit is zero the fox is alive
+                X(qubits[6]);
+                X(qubits[12]);
+
+                CNOT(qubits[6], qubits[13]);
+                CNOT(qubits[12], qubits[13]);
+                CCNOT(qubits[6], qubits[12], qubits[13]);
+
+                set res = M(qubits[13]);
+                ResetAll(qubits); // ALWAYS clean after yourself        
+            }    
+            
+            return (res);
+        }
     }
 
     // Inits fox holes, with almost equal probabilities
@@ -177,23 +201,24 @@
             (Controlled(MakeMovement))([qubits[6]],(qubits));                         
             CNOT(qubits[3], qubits[6]);                  
 
+
             // Move 4  
             SwapReverseRegister([qubits[5], qubits[9]]); 
-            (Controlled(SetupMovementDirection))([qubits[6]],(qubits));
-            (Controlled(MakeMovement))([qubits[6]],(qubits));                         
-            CNOT(qubits[1], qubits[6]);                  
+            (Controlled(SetupMovementDirection))([qubits[6], qubits[12]],(qubits));
+            (Controlled(MakeMovement))([qubits[6], qubits[12]],(qubits));                         
+            CNOT(qubits[1], qubits[12]);                  
 
             // Move 5  
             SwapReverseRegister([qubits[5], qubits[10]]); 
-            (Controlled(SetupMovementDirection))([qubits[6]],(qubits));
-            (Controlled(MakeMovement))([qubits[6]],(qubits));                         
-            CNOT(qubits[2], qubits[6]);      
+            (Controlled(SetupMovementDirection))([qubits[6], qubits[12]],(qubits));
+            (Controlled(MakeMovement))([qubits[6], qubits[12]],(qubits));                         
+            CNOT(qubits[2], qubits[12]);      
             
             // Move 6  
             SwapReverseRegister([qubits[5], qubits[11]]); 
-            (Controlled(SetupMovementDirection))([qubits[6]],(qubits));
-            (Controlled(MakeMovement))([qubits[6]],(qubits));                         
-            CNOT(qubits[3], qubits[6]);                                           
+            (Controlled(SetupMovementDirection))([qubits[6], qubits[12]],(qubits));
+            (Controlled(MakeMovement))([qubits[6], qubits[12]],(qubits));                         
+            CNOT(qubits[3], qubits[12]);                                           
         }        
     }
 

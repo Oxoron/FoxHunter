@@ -11,12 +11,12 @@ namespace Quantum.FoxHunter
     {
         static void Main(string[] args)
         {
-            // RunFoxHunt();
+            RunFoxHunt();
 
             //TestInitiation();
             //TestMovementDirectionSetup();
             //TestFirstMove();
-            TestMovements();
+            //TestMovements();
 
             Console.ReadLine();
             
@@ -150,18 +150,18 @@ namespace Quantum.FoxHunter
 
             using (var sim = new QuantumSimulator())
             {
-                var successCount = 0;
-                var failCount = 0;
+                var foxSurvives = 0;
+                var hunterWins = 0;
 
                 for (int i = 0; i < 1000; i++)
                 {
                     var result = (Result)(TestStrategy.Run(sim).Result);
-                    if (result == Result.Zero) { failCount++; }
-                    else { successCount++; }
+                    if (result == Result.Zero) { foxSurvives++; }
+                    else { hunterWins++; }
                 }
 
-                Console.WriteLine($"OK:\t{successCount}");
-                Console.WriteLine($"Fail:\t{failCount}");
+                Console.WriteLine($"Fox survives: \t{foxSurvives}");
+                Console.WriteLine($"Hunter wins: \t{hunterWins}");
             }
 
             sw.Stop();
