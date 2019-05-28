@@ -15,7 +15,8 @@ namespace Quantum.FoxHunter
 
             //TestInitiation();
             //TestMovementDirectionSetup();
-            TestFirstMove();
+            //TestFirstMove();
+            TestMovements();
 
             Console.ReadLine();
             
@@ -121,6 +122,23 @@ namespace Quantum.FoxHunter
                 }
 
                 Console.WriteLine($"\r\nTotal measures: {results.Count()}");
+            }
+
+        }
+
+        static void TestMovements()
+        {
+            using (var sim = new QuantumSimulator())
+            {
+                int zerosCount = 0;
+
+                for (int i = 0; i < 1000; i++)
+                {
+                    Result result = Quantum.FoxHunter.TestSixMovements.Run(sim).Result;
+                    if(result == Result.Zero) { zerosCount++; }
+                }                                                                                                       
+
+                Console.WriteLine($"\r\nTotal zeroes: {zerosCount}");
             }
 
         }
